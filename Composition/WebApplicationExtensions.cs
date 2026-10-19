@@ -1,11 +1,11 @@
-using Asibosoft.Api.Data;
+using Astibosoft.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Asibosoft.Api.Composition;
+namespace Astibosoft.Api.Composition;
 
 public static class WebApplicationExtensions
 {
-    public static async Task UseAsibosoftPipelineAsync(this WebApplication app)
+    public static async Task UseAstibosoftPipelineAsync(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {

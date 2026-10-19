@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Asibosoft.Api.Migrations
+namespace Astibosoft.Api.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

@@ -1,0 +1,45 @@
+# Astibosoft on shared VPS infra 
+# Requires external Docker networks: edge, database
+# and a postgres service reachable as hostname "postgres" on database.
+#
+# Infra nginx proxies https://astibosoft.com/api/ → http://astibosoft-api:8080
+
+name: astibosoft-vps
+
+services:
+  db-init:
+    image: postgres:17-alpine
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-astibosoft}
+    volumes:
+      - ./docker-init.sh:/docker-init.sh:ro
+    command: ["sh", "/docker-init.sh"]
+    networks: [database]
+
+  astibosoft-api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-astibosoft};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      Database__AutoMigrate: "true"
+      # Same-origin site+API on astibosoft.com does not need CORS.
+      # Keep optional for localhost or other origins later.
+      Allowed_Cors__0: ${PUBLIC_ORIGIN:-}
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    networks: [edge, database]
+
+networks:
+  edge:
+    external: true
+    name: edge
+  database:
+    external: true
+    name: database

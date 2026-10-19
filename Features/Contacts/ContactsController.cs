@@ -1,9 +1,9 @@
-using Asibosoft.Api.Errors.Business;
-using Asibosoft.Api.Features.Contacts.Create;
+using Astibosoft.Api.Errors.Business;
+using Astibosoft.Api.Features.Contacts.Create;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace Asibosoft.Api.Features.Contacts;
+namespace Astibosoft.Api.Features.Contacts;
 
 [ApiController]
 [Route("api/contacts")]

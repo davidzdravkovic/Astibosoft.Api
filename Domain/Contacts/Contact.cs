@@ -1,4 +1,4 @@
-namespace Asibosoft.Api.Domain.Contacts;
+namespace Astibosoft.Api.Domain.Contacts;
 
 public class Contact
 {

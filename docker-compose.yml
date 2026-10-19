@@ -1,19 +1,20 @@
-name: asibosoft-api
+# Local only (bundled Postgres). VPS deploy: deploy/compose.vps.yaml
+name: astibosoft-api-local
 
 services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-asibosoft}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-asibosoft}
-      POSTGRES_DB: ${POSTGRES_DB:-asibosoft}
+      POSTGRES_USER: ${POSTGRES_USER:-astibosoft}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-astibosoft}
+      POSTGRES_DB: ${POSTGRES_DB:-astibosoft}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - asibosoft_pg:/var/lib/postgresql/data
+      - astibosoft_pg:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-asibosoft} -d ${POSTGRES_DB:-asibosoft}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-astibosoft} -d ${POSTGRES_DB:-astibosoft}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -27,7 +28,7 @@ services:
       - "${API_PORT:-8080}:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-asibosoft};Username=${POSTGRES_USER:-asibosoft};Password=${POSTGRES_PASSWORD:-asibosoft}
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-astibosoft};Username=${POSTGRES_USER:-astibosoft};Password=${POSTGRES_PASSWORD:-astibosoft}
       Database__AutoMigrate: "true"
       Allowed_Cors__0: ${PUBLIC_ORIGIN:-http://localhost:3000}
     depends_on:
@@ -35,4 +36,4 @@ services:
         condition: service_healthy
 
 volumes:
-  asibosoft_pg:
+  astibosoft_pg:

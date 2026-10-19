@@ -1,8 +1,8 @@
-using Asibosoft.Api.Domain.Contacts;
+using Astibosoft.Api.Domain.Contacts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Asibosoft.Api.Data.Configurations.Contacts;
+namespace Astibosoft.Api.Data.Configurations.Contacts;
 
 public sealed class ContactConfiguration : IEntityTypeConfiguration<Contact>
 {

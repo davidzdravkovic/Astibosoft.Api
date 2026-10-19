@@ -1,11 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY Asibosoft.Api.csproj .
-RUN dotnet restore Asibosoft.Api.csproj
+COPY Astibosoft.Api.csproj .
+RUN dotnet restore Astibosoft.Api.csproj
 
 COPY . .
-RUN dotnet publish Asibosoft.Api.csproj -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish Astibosoft.Api.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
@@ -15,4 +15,4 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "Asibosoft.Api.dll"]
+ENTRYPOINT ["dotnet", "Astibosoft.Api.dll"]

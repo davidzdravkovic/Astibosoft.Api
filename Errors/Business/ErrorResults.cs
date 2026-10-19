@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Asibosoft.Api.Errors.Business;
+namespace Astibosoft.Api.Errors.Business;
 
 public static class ErrorResults
 {

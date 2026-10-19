@@ -1,11 +1,11 @@
-using Asibosoft.Api.Composition;
+using Astibosoft.Api.Composition;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAsibosoftServices(builder.Configuration);
+builder.Services.AddAstibosoftServices(builder.Configuration);
 
 var app = builder.Build();
 
-await app.UseAsibosoftPipelineAsync();
+await app.UseAstibosoftPipelineAsync();
 
 app.Run();

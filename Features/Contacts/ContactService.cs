@@ -1,10 +1,10 @@
 using System.Net.Mail;
-using Asibosoft.Api.Data.Stores.ContactsStore;
-using Asibosoft.Api.Domain.Contacts;
-using Asibosoft.Api.Errors.Business;
-using Asibosoft.Api.Features.Contacts.Create;
+using Astibosoft.Api.Data.Stores.ContactsStore;
+using Astibosoft.Api.Domain.Contacts;
+using Astibosoft.Api.Errors.Business;
+using Astibosoft.Api.Features.Contacts.Create;
 
-namespace Asibosoft.Api.Features.Contacts;
+namespace Astibosoft.Api.Features.Contacts;
 
 public class ContactService(
     IContactStore contactStore,

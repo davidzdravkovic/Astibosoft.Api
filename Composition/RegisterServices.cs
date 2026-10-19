@@ -1,15 +1,15 @@
 using System.Threading.RateLimiting;
-using Asibosoft.Api.Data;
-using Asibosoft.Api.Data.Stores.ContactsStore;
-using Asibosoft.Api.Errors.Exceptions;
-using Asibosoft.Api.Features.Contacts;
+using Astibosoft.Api.Data;
+using Astibosoft.Api.Data.Stores.ContactsStore;
+using Astibosoft.Api.Errors.Exceptions;
+using Astibosoft.Api.Features.Contacts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Asibosoft.Api.Composition;
+namespace Astibosoft.Api.Composition;
 
 public static class RegisterServices
 {
-    public static IServiceCollection AddAsibosoftServices(
+    public static IServiceCollection AddAstibosoftServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -21,8 +21,8 @@ public static class RegisterServices
                     new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
 
-        services.AddAsibosoftCors(configuration);
-        services.AddAsibosoftRateLimiting();
+        services.AddAstibosoftCors(configuration);
+        services.AddAstibosoftRateLimiting();
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
@@ -36,7 +36,7 @@ public static class RegisterServices
         return services;
     }
 
-    private static IServiceCollection AddAsibosoftCors(
+    private static IServiceCollection AddAstibosoftCors(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -64,7 +64,7 @@ public static class RegisterServices
         return services;
     }
 
-    private static IServiceCollection AddAsibosoftRateLimiting(this IServiceCollection services)
+    private static IServiceCollection AddAstibosoftRateLimiting(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
         {

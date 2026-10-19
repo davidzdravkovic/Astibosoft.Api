@@ -5,5 +5,7 @@ obj/
 *.suo
 .env
 .env.*
-!/.env.example
+!.env.example
+!deploy/.env.example
 appsettings.*.local.json
+

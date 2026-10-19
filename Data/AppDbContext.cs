@@ -1,7 +1,7 @@
-using Asibosoft.Api.Domain.Contacts;
+using Astibosoft.Api.Domain.Contacts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Asibosoft.Api.Data;
+namespace Astibosoft.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

@@ -1,4 +1,4 @@
-namespace Asibosoft.Api.Errors.Business;
+namespace Astibosoft.Api.Errors.Business;
 
 public sealed class Result
 {

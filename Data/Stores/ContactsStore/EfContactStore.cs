@@ -1,6 +1,6 @@
-using Asibosoft.Api.Domain.Contacts;
+using Astibosoft.Api.Domain.Contacts;
 
-namespace Asibosoft.Api.Data.Stores.ContactsStore;
+namespace Astibosoft.Api.Data.Stores.ContactsStore;
 
 public class EfContactStore(AppDbContext db) : IContactStore
 {

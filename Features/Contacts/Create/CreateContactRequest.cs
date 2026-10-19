@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Asibosoft.Api.Features.Contacts.Create;
+namespace Astibosoft.Api.Features.Contacts.Create;
 
 // Website is a honeypot: leave empty; bots that fill it are ignored.
 public record CreateContactRequest(
