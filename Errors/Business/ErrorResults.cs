@@ -6,6 +6,7 @@ public static class ErrorResults
 {
     public static ActionResult From(string error, object? details = null) => error switch
     {
+        ErrorCodes.InvalidCredentials => new UnauthorizedObjectResult(Body(error)),
         _ => new BadRequestObjectResult(Body(error, details)),
     };
 
@@ -23,6 +24,7 @@ public static class ErrorResults
             "Shorten the message to 1500 characters or fewer.",
         ErrorCodes.ContactInvalidEmail =>
             "Check the email address. It should look like name@example.com.",
+        ErrorCodes.InvalidCredentials => "Invalid email or password.",
         _ => error,
     };
 }

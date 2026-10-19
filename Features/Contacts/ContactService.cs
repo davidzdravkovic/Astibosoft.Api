@@ -3,6 +3,7 @@ using Astibosoft.Api.Data.Stores.ContactsStore;
 using Astibosoft.Api.Domain.Contacts;
 using Astibosoft.Api.Errors.Business;
 using Astibosoft.Api.Features.Contacts.Create;
+using Astibosoft.Api.Features.Contacts.List;
 
 namespace Astibosoft.Api.Features.Contacts;
 
@@ -52,7 +53,14 @@ public class ContactService(
         await contactStore.AddAsync(contact);
         await contactStore.SaveChangesAsync(cancellationToken);
 
-        return Result<ContactResponse>.Success(ToResponse(contact));
+        return Result<ContactResponse>.Success(ToCreateResponse(contact));
+    }
+
+    public async Task<IReadOnlyList<ContactListItemResponse>> ListAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var contacts = await contactStore.ListRecentAsync(100, cancellationToken);
+        return contacts.Select(ToListItem).ToList();
     }
 
     private static bool IsValidEmail(string email)
@@ -68,6 +76,17 @@ public class ContactService(
         }
     }
 
-    private static ContactResponse ToResponse(Contact contact) =>
+    private static ContactResponse ToCreateResponse(Contact contact) =>
         new(contact.Id, contact.CreatedAt);
+
+    private static ContactListItemResponse ToListItem(Contact contact) =>
+        new(
+            contact.Id,
+            contact.Name,
+            contact.Email,
+            contact.Company,
+            contact.Service,
+            contact.Message,
+            contact.ClientIp,
+            contact.CreatedAt);
 }

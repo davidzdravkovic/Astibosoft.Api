@@ -8,4 +8,5 @@ obj/
 !.env.example
 !deploy/.env.example
 appsettings.*.local.json
+appsettings.Development.json
 

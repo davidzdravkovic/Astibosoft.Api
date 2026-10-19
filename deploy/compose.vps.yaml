@@ -1,4 +1,4 @@
-# Astibosoft on shared VPS infra 
+# Astibosoft on shared VPS infra
 # Requires external Docker networks: edge, database
 # and a postgres service reachable as hostname "postgres" on database.
 #
@@ -28,9 +28,17 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-astibosoft};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Database__AutoMigrate: "true"
-      # Same-origin site+API on astibosoft.com does not need CORS.
-      # Keep optional for localhost or other origins later.
       Allowed_Cors__0: ${PUBLIC_ORIGIN:-}
+      Jwt__Issuer: Astibosoft
+      Jwt__Audience: Astibosoft
+      Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES:-480}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY}
+      Founders__Founder1__Email: ${FOUNDER1_EMAIL}
+      Founders__Founder1__Password: ${FOUNDER1_PASSWORD}
+      Founders__Founder1__Name: ${FOUNDER1_NAME:-}
+      Founders__Founder2__Email: ${FOUNDER2_EMAIL}
+      Founders__Founder2__Password: ${FOUNDER2_PASSWORD}
+      Founders__Founder2__Name: ${FOUNDER2_NAME:-}
     depends_on:
       db-init:
         condition: service_completed_successfully

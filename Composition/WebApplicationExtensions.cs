@@ -18,6 +18,8 @@ public static class WebApplicationExtensions
             await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
         }
 
+        await AdminSeeder.SeedAsync(app.Services);
+
         // Must run before rate limiting / controllers so RemoteIpAddress is the client.
         app.UseForwardedHeaders();
 
@@ -29,6 +31,8 @@ public static class WebApplicationExtensions
             app.UseHttpsRedirection();
         }
 
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseRateLimiter();
         app.MapControllers();
     }
