@@ -3,6 +3,7 @@ using Astibosoft.Api.Data;
 using Astibosoft.Api.Data.Stores.ContactsStore;
 using Astibosoft.Api.Errors.Exceptions;
 using Astibosoft.Api.Features.Contacts;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 namespace Astibosoft.Api.Composition;
@@ -13,6 +14,19 @@ public static class RegisterServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // One trusted proxy (Infra nginx). Peels one X-Forwarded-For hop from the right
+        // into Connection.RemoteIpAddress for rate limiting + Contact.ClientIp.
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardLimit = 1;
+            // Docker nginx peer is not loopback; clear defaults so the header is applied.
+            // Safe only while the API is not publicly exposed (edge network behind nginx).
+            options.KnownIPNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+
         services.AddOpenApi();
         services.AddControllers()
             .AddJsonOptions(options =>

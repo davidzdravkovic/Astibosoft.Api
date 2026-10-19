@@ -18,6 +18,9 @@ public static class WebApplicationExtensions
             await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
         }
 
+        // Must run before rate limiting / controllers so RemoteIpAddress is the client.
+        app.UseForwardedHeaders();
+
         app.UseExceptionHandler();
         app.UseCors(app.Environment.IsDevelopment() ? "DevCors" : "ProdCors");
 
