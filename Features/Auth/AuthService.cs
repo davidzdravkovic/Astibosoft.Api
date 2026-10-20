@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Astibosoft.Api.Data.Stores.AdminsStore;
 using Astibosoft.Api.Errors.Business;
 using Astibosoft.Api.Features.Auth.Login;
@@ -23,24 +21,5 @@ public class AuthService(IAdminStore adminStore, JwtTokenIssuer jwtTokenIssuer)
 
         return Result<LoginResponse>.Success(
             new LoginResponse(accessToken, admin.Id, admin.Email, admin.Name));
-    }
-
-    public AdminSessionResponse? GetSession(ClaimsPrincipal user)
-    {
-        if (user.Identity?.IsAuthenticated != true)
-            return null;
-
-        var idValue = user.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub)
-            ?? user.FindFirstValue("sub");
-        var email = user.FindFirstValue(ClaimTypes.Email)
-            ?? user.FindFirstValue(JwtRegisteredClaimNames.Email)
-            ?? user.FindFirstValue("email");
-        var name = user.FindFirstValue(ClaimTypes.Name);
-
-        if (idValue is null || email is null || !Guid.TryParse(idValue, out var id))
-            return null;
-
-        return new AdminSessionResponse(id, email, name ?? email);
     }
 }

@@ -5,7 +5,9 @@ using Astibosoft.Api.Data.Stores.AdminsStore;
 using Astibosoft.Api.Data.Stores.ContactsStore;
 using Astibosoft.Api.Errors.Exceptions;
 using Astibosoft.Api.Features.Auth;
+using Astibosoft.Api.Features.Chat;
 using Astibosoft.Api.Features.Contacts;
+using Astibosoft.Api.Infrastructure.Ai;
 using Astibosoft.Api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -31,6 +33,13 @@ public static class RegisterServices
         });
 
         services.Configure<FoundersOptions>(configuration.GetSection(FoundersOptions.SectionName));
+
+        services.AddOptions<AiOptions>()
+            .Bind(configuration.GetSection(AiOptions.SectionName))
+            .Validate(
+                o => Uri.TryCreate(o.BaseUrl, UriKind.Absolute, out _),
+                "Ai:BaseUrl must be an absolute URL.")
+            .ValidateOnStart();
 
         services.AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
@@ -62,7 +71,15 @@ public static class RegisterServices
         services.AddScoped<IAdminStore, EfAdminStore>();
         services.AddScoped<ContactService>();
         services.AddScoped<AuthService>();
+        services.AddScoped<ChatService>();
         services.AddSingleton<JwtTokenIssuer>();
+
+        services.AddHttpClient<IAiChatClient, AiChatClient>((sp, client) =>
+        {
+            var ai = sp.GetRequiredService<IOptions<AiOptions>>().Value;
+            client.BaseAddress = new Uri(ai.BaseUrl.TrimEnd('/') + "/");
+            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(ai.TimeoutSeconds, 5, 180));
+        });
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
@@ -136,12 +153,35 @@ public static class RegisterServices
                     cancellationToken);
             };
 
+            // Public contact form — spam / bot flood (cheap anonymous POST).
             options.AddPolicy("contact", httpContext =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = 5,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                    }));
+
+            // Per-IP only for now; per-email lockout can be added later if needed.
+            options.AddPolicy("login", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5,
+                        Window = TimeSpan.FromMinutes(15),
+                        QueueLimit = 0,
+                    }));
+
+            // Public chatbot — costlier than contact (LLM); keep modest.
+            options.AddPolicy("chat", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
                         Window = TimeSpan.FromMinutes(1),
                         QueueLimit = 0,
                     }));

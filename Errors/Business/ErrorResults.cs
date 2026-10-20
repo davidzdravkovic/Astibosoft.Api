@@ -7,6 +7,10 @@ public static class ErrorResults
     public static ActionResult From(string error, object? details = null) => error switch
     {
         ErrorCodes.InvalidCredentials => new UnauthorizedObjectResult(Body(error)),
+        ErrorCodes.ChatAssistantUnavailable => new ObjectResult(Body(error))
+        {
+            StatusCode = StatusCodes.Status503ServiceUnavailable,
+        },
         _ => new BadRequestObjectResult(Body(error, details)),
     };
 
@@ -25,6 +29,11 @@ public static class ErrorResults
         ErrorCodes.ContactInvalidEmail =>
             "Check the email address. It should look like name@example.com.",
         ErrorCodes.InvalidCredentials => "Invalid email or password.",
+        ErrorCodes.ChatMessageEmpty => "Enter a message.",
+        ErrorCodes.ChatMessageTooLong =>
+            "Shorten the message to 1500 characters or fewer.",
+        ErrorCodes.ChatAssistantUnavailable =>
+            "The assistant is unavailable right now. Try again in a moment.",
         _ => error,
     };
 }

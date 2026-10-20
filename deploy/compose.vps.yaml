@@ -3,6 +3,8 @@
 # and a postgres service reachable as hostname "postgres" on database.
 #
 # Infra nginx proxies https://astibosoft.com/api/ → http://astibosoft-api:8080
+# Ai is localhost-only for CLI embed:
+#   curl -X POST http://127.0.0.1:8090/internal/embed ...
 
 name: astibosoft-vps
 
@@ -19,6 +21,28 @@ services:
     command: ["sh", "/docker-init.sh"]
     networks: [database]
 
+  astibosoft-ai:
+    build:
+      context: ${ASTIBOSOFT_AI_CONTEXT:-../../Astibosoft.Ai}
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${AI_HOST_PORT:-8090}:8090"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-astibosoft}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      RAG_INTERNAL_KEY: ${AI_INTERNAL_KEY}
+      AI_EMBED_ON_START: ${AI_EMBED_ON_START:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    networks: [database]
+
   astibosoft-api:
     build:
       context: ..
@@ -29,6 +53,9 @@ services:
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-astibosoft};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Database__AutoMigrate: "true"
       Allowed_Cors__0: ${PUBLIC_ORIGIN:-}
+      Ai__BaseUrl: ${AI_BASE_URL:-http://astibosoft-ai:8090}
+      Ai__InternalKey: ${AI_INTERNAL_KEY}
+      Ai__TimeoutSeconds: ${AI_TIMEOUT_SECONDS:-60}
       Jwt__Issuer: Astibosoft
       Jwt__Audience: Astibosoft
       Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES:-480}
@@ -42,6 +69,8 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+      astibosoft-ai:
+        condition: service_started
     networks: [edge, database]
 
 networks:
